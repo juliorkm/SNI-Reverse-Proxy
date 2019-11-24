@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -36,6 +37,16 @@ public class RedirectHandler extends HttpServlet {
                 + (req.getQueryString() != null ? "?" + req.getQueryString() : ""));
         
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        final Enumeration<String> headers = req.getHeaderNames();
+        while (headers.hasMoreElements()) {
+            final String header = headers.nextElement();
+            final Enumeration<String> values = req.getHeaders(header);
+            while (values.hasMoreElements()) {
+                final String value = values.nextElement();
+                conn.addRequestProperty(header, value);
+            }
+        }
 
         conn.setRequestMethod(requestMethod);
         conn.connect();
