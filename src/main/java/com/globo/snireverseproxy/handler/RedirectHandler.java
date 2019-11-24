@@ -1,11 +1,13 @@
 package com.globo.snireverseproxy.handler;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,19 @@ public class RedirectHandler extends HttpServlet {
         }
 
         conn.setRequestMethod(requestMethod);
+        if (Arrays.asList("POST", "PUT", "DELETE").contains(requestMethod)) {
+            conn.setDoOutput(true);
+	        DataOutputStream wr = new DataOutputStream( conn.getOutputStream());
+		    String postParameters = "";
+		    for (String key : requestParameters.keySet()) {
+		        if (postParameters.length() > 0)
+		            postParameters += "&";
+		        postParameters += key + "=";
+		        postParameters += String.join("&" + key + "=", requestParameters.get(key));
+		    }
+		    wr.write(postParameters.getBytes());
+        }
+
         conn.connect();
 
         int status = conn.getResponseCode();
