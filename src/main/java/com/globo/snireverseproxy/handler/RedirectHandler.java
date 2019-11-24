@@ -95,7 +95,7 @@ public class RedirectHandler extends HttpServlet {
         StringBuilder sb = new StringBuilder();
         String output;
         while ((output = br.readLine()) != null) {
-          sb.append(output);
+          sb.append(output + '\n');
         }
         PrintWriter out = resp.getWriter();
         out.print(sb.toString());
