@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -54,6 +55,15 @@ public class RedirectHandler extends HttpServlet {
         int status = conn.getResponseCode();
         resp.setStatus(status);
         
+        Map<String, List<String>> responseHeaders = conn.getHeaderFields();
+        for (String key : responseHeaders.keySet()) {
+            for (String value : responseHeaders.get(key)) {
+                if (key != null) {
+                    resp.addHeader(key, value);
+                }
+            }
+        }
+
         String encoding = conn.getContentEncoding();
         if (encoding == null) {
             encoding = "UTF-8";
